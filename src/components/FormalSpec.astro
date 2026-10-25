@@ -12,7 +12,7 @@ const commands = [
   { key: 'fspec plan', syntax: 'fspec plan [--all] [--dirty]', does: 'Diffs config against state, per host. With --all, it asks each remote host over ssh.' },
   { key: 'fspec apply', syntax: 'fspec apply [--host h] [--all] [--dirty]', does: 'Converges the host, over ssh for remote hosts.' },
   { key: 'fspec rollback', syntax: 'fspec rollback [gen]', does: 'Goes back to the previous generation, data included.' },
-  { key: 'fspec shell-hook', syntax: 'fspec shell-hook <fish|zsh|bash>', does: 'Prints shell code that applies .fspec.toml pins.' },
+  { key: 'fspec dev', syntax: 'fspec dev [-- cmd]', does: "Opens a shell, or runs one command, in the nearest dev.star's environment." },
   { key: 'fspec gc', syntax: 'fspec gc --older-than 14d', does: 'Drops old generations, store paths and trash.' },
   { key: 'fspec adopt', syntax: 'fspec adopt <path>', does: "Pulls an app's edit of a managed file into the repo." },
   { key: 'fspec orphans', syntax: 'fspec orphans', does: 'Shows unattributed app data.' },
