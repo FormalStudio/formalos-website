@@ -2,13 +2,13 @@
 import { getImage } from 'astro:assets';
 import { Pause, Play } from '@lucide/astro';
 import poster from '../assets/shots/meshtop-demo-poster.png';
-import { REPOS, SITE } from '../site';
+import { REPOS } from '../site';
 
 const posterImage = await getImage({ src: poster, format: 'webp', width: 1120 });
 
 const groups = [
   {
-    label: `${SITE.author}'s`,
+    label: 'By FormalSnake',
     dot: 'bg-accent',
     items: [
       {
@@ -26,14 +26,14 @@ const groups = [
     ],
   },
   {
-    label: 'Contributions',
+    label: 'Contributed to',
     dot: 'bg-soft',
     items: [
       {
         name: 'Kopuz',
         href: REPOS.kopuz,
-        value: 'Contributor',
-        text: `A Rust and Dioxus music player by the Kopuz-org community. ${SITE.author} contributes to it.`,
+        value: 'Rust and Dioxus',
+        text: 'A lightweight player for your local music collection, built by the Kopuz community.',
       },
     ],
   },

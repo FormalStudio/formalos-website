@@ -24,7 +24,7 @@ type Tile = {
   media: { video: string; poster: string } | { image: ImageMetadata; alt: string };
   position: string;
   top: [string, string];
-  bottom: [string, string];
+  label: string;
 };
 
 const tiles: Tile[] = [
@@ -32,7 +32,7 @@ const tiles: Tile[] = [
     media: { video: '/media/shell-launcher.mp4', poster: await poster(launcherPoster) },
     position: 'object-center',
     top: ['metamorphosis', 'default'],
-    bottom: ['Launcher', 'docs/media'],
+    label: 'Launcher',
   },
   {
     media: {
@@ -41,7 +41,7 @@ const tiles: Tile[] = [
     },
     position: 'object-right',
     top: ['metamorphosis', 'default'],
-    bottom: ['Media panel', 'docs/screenshots'],
+    label: 'Media panel',
   },
   {
     media: {
@@ -50,7 +50,7 @@ const tiles: Tile[] = [
     },
     position: 'object-right',
     top: ['pantheon', 'elementary'],
-    bottom: ['Media panel', 'docs/screenshots'],
+    label: 'Media panel',
   },
   {
     media: {
@@ -59,13 +59,13 @@ const tiles: Tile[] = [
     },
     position: 'object-right',
     top: ['retro', 'dithered'],
-    bottom: ['Media panel', 'docs/screenshots'],
+    label: 'Media panel',
   },
   {
     media: { video: '/media/shell-screensaver.mp4', poster: await poster(screensaverPoster) },
     position: 'object-center',
     top: ['ttfx', 'decrypt'],
-    bottom: ['Screensaver', 'docs/media'],
+    label: 'Screensaver',
   },
   {
     media: {
@@ -74,7 +74,7 @@ const tiles: Tile[] = [
     },
     position: 'object-center',
     top: ['PAM', 'lock screen'],
-    bottom: ['Lock screen', 'docs/screenshots'],
+    label: 'Lock screen',
   },
   {
     media: {
@@ -83,7 +83,7 @@ const tiles: Tile[] = [
     },
     position: 'object-right',
     top: ['DND', 'history'],
-    bottom: ['Notification centre', 'docs/screenshots'],
+    label: 'Notification centre',
   },
   {
     media: {
@@ -92,7 +92,7 @@ const tiles: Tile[] = [
     },
     position: 'object-top',
     top: ['31 styles', 'media panel'],
-    bottom: ['Visualizers', 'docs/media'],
+    label: 'Visualizers',
   },
 ];
 ---
@@ -100,13 +100,13 @@ const tiles: Tile[] = [
 <section id="formalshell" aria-labelledby="formalshell-title" class="mx-auto max-w-[90rem] px-5 pt-28 sm:px-10 lg:pt-36">
   <div class="reveal">
     <h2 id="formalshell-title" class="text-[length:var(--text-title)] leading-[1.05] tracking-[-0.02em]">
-      FormalShell, coming next
+      FormalShell
     </h2>
     <p class="mt-4 max-w-[44ch] text-lead leading-snug text-soft">
       A desktop shell for Hyprland, written in Rust. One process draws the bar, launcher, panels, notifications, lock screen, greeter and screensaver, and every colour comes from your wallpaper.
     </p>
     <p class="mt-5 max-w-[60ch] text-small text-soft">
-      Ready for everyday use on Hyprland 0.56 and newer. Coming to the installer next.
+      Runs on Hyprland 0.56 and newer. The installer will offer it in a coming release.
     </p>
     <p class="mt-4">
       <a class="link" href={REPOS.formalshell}>Follow FormalShell on GitHub</a>
@@ -162,10 +162,7 @@ const tiles: Tile[] = [
               <span class="font-medium">{t.top[0]}</span>
               <span>{t.top[1]}</span>
             </p>
-            <p class="flex flex-wrap justify-between gap-x-2 opacity-80">
-              <span>{t.bottom[0]}</span>
-              <span class="hidden lg:inline">{t.bottom[1]}</span>
-            </p>
+            <p class="opacity-80">{t.label}</p>
           </div>
         </li>
       ))

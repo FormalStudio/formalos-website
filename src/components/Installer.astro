@@ -15,9 +15,9 @@ const paint = (screen: string) =>
   escape(screen.replace(/\n$/, '')).replace(/[▌✓●⠧]/g, (c) => `<span class="mark">${c}</span>`);
 
 const steps = [
-  { id: 'system', title: 'Choose a system', body: `${DISTROS.length} distros, each with what its release model and kernel mean for you.`, screen: system },
+  { id: 'system', title: 'Choose a system', body: `${DISTROS.length} distros, each with its release model and kernel explained.`, screen: system },
   { id: 'disk', title: 'Choose a disk', body: 'Encrypt it with LUKS2, and get btrfs subvolumes for each system, your home and swap.', screen: disk },
-  { id: 'install', title: 'Install', body: 'Twelve named steps with a live log, from partitions to bootloader.', screen: running },
+  { id: 'install', title: 'Install', body: 'Follow each step, from partitioning the disk to installing the bootloader.', screen: running },
   { id: 'done', title: 'Restart into it', body: 'Your spec is applied before the first login.', screen: done },
   { id: 'restore', title: 'Or restore a machine', body: 'Clone your spec repo and pick a host you already described.', screen: host },
 ];
