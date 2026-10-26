@@ -1,6 +1,7 @@
 export const SITE = {
   name: 'FormalOS',
   author: 'FormalSnake',
+  owner: 'Kyan De Sutter',
   github: 'https://github.com/FormalStudio',
   description:
     'Open-source tools that turn Fedora, Arch, Debian, and other distros into one system you describe in code: FormalSpec, its installer, native apps, and FormalShell.',

@@ -38,7 +38,7 @@ def laptop(name, extra = []):
         name = name,
         platform = "x86_64-linux",
         system = image(base = "ghcr.io/ublue-os/bazzite-nvidia:stable"),
-        users = [user("alex", uid = 1000, shell = "fish")],
+        users = [user("kyan", uid = 1000, shell = "fish")],
         modules = [cli()] + extra,
     )
 

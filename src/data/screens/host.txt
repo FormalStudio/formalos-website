@@ -3,7 +3,7 @@
 
   Choose a host
 
-  ▌ framework           x86_64-linux       fedora   alex
+  ▌ framework           x86_64-linux       fedora   kyan
     macbook             macOS hosts are not installed from this ISO
 
 
