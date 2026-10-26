@@ -146,8 +146,7 @@ const facts = (d: (typeof DISTROS)[number]) =>
     color: oklch(0.198 0 0 / 0.7);
   }
 
-  .choice-row:has(:focus-visible),
-  .seg label:has(:focus-visible) {
+  .choice-row:has(:focus-visible) {
     outline: 2px solid var(--accent-text);
     outline-offset: 1px;
   }
@@ -156,44 +155,6 @@ const facts = (d: (typeof DISTROS)[number]) =>
     .choice-row:not(:has(:checked)):hover {
       background: var(--raised-2);
     }
-  }
-
-  .seg {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-    padding: 2px;
-    border-radius: 8px;
-    background: #121212;
-    width: fit-content;
-  }
-
-  .seg label {
-    min-height: 2.125rem;
-    display: grid;
-    place-items: center;
-    padding: 0 0.75rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 120ms ease, color 120ms ease, transform 120ms var(--ease-out);
-  }
-
-  .seg label:active {
-    transform: scale(0.96);
-  }
-
-  .seg label:has(:checked) {
-    background: var(--raised-2);
-    color: var(--ink);
-  }
-
-  .seg label:not(:has(:checked)) {
-    color: var(--soft);
-  }
-
-  .seg label:has(:disabled) {
-    opacity: 0.35;
-    cursor: not-allowed;
   }
 
   #desktop-set:disabled {

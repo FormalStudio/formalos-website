@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Copies the screenshots each repo's own scripts/shots wrote into docs/shots/
+# over to src/assets/shots and public/media. Pass --capture to run those
+# scripts first (slow: builds every app on macOS, g815 and Windows).
+set -euo pipefail
+
+site=$(cd "$(dirname "$0")/.." && pwd)
+eco=${ECOSYSTEM:-$(dirname "$site")}
+assets=$site/src/assets/shots
+media=$site/public/media
+
+# site id, repo dir
+apps=(
+  "nd nativedesktop"
+  "lynk lynk"
+  "messages messages"
+  "music formalmusic"
+)
+
+if [[ ${1:-} == --capture ]]; then
+  for entry in "${apps[@]}"; do
+    read -r _ repo <<<"$entry"
+    "$eco/$repo/scripts/shots" all
+  done
+  "$eco/FormalShell/scripts/shots"
+fi
+
+for entry in "${apps[@]}"; do
+  read -r id repo <<<"$entry"
+  for os in macos linux windows; do
+    src=$eco/$repo/docs/shots/$os.png
+    [[ -f $src ]] && cp "$src" "$assets/$id-$os.png" && echo "$id-$os.png"
+  done
+done
+
+shell=$eco/FormalShell/docs/shots
+for name in theme-metamorphosis theme-pantheon theme-retro lock center visualizers media notifications \
+  launcher-poster screensaver-poster panel-poster; do
+  [[ -f $shell/$name.png ]] && cp "$shell/$name.png" "$assets/shell-$name.png" && echo "shell-$name.png"
+done
+for name in launcher screensaver panel; do
+  [[ -f $shell/$name.mp4 ]] && cp "$shell/$name.mp4" "$media/shell-$name.mp4" && echo "shell-$name.mp4"
+done
+true

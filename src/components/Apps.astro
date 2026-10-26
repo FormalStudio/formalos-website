@@ -1,45 +1,68 @@
 ---
+import type { ImageMetadata } from 'astro';
 import { Picture } from 'astro:assets';
 import { REPOS } from '../site';
-import ndMac from '../assets/shots/nd-gallery-macos.png';
-import lynkMac from '../assets/shots/lynk-mac.png';
-import messagesThread from '../assets/shots/messages-thread.png';
-import musicLyrics from '../assets/shots/music-lyrics.png';
 
-const apps = [
+// scripts/shots copies each repo's docs/shots/<os>.png here as <id>-<os>.png.
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/shots/*.png', { eager: true });
+
+const OSES = [
+  { id: 'macos', label: 'macOS' },
+  { id: 'linux', label: 'Linux' },
+  { id: 'windows', label: 'Windows' },
+];
+
+const list = [
   {
+    id: 'nd',
     name: 'NativeDesktop',
     kind: 'Rust toolkit',
     platforms: 'macOS, Linux, Windows, web',
     href: REPOS.nativedesktop,
-    shot: ndMac,
-    alt: 'The NativeDesktop gallery example on macOS, with a native sidebar, toolbar and banner.',
+    alt: (os: string) => `The NativeDesktop gallery example on ${os}, with a native sidebar and toolbar.`,
   },
   {
+    id: 'lynk',
     name: 'Lynk Browser',
     kind: 'Browser',
     platforms: 'macOS, Linux',
     href: REPOS.lynk,
-    shot: lynkMac,
-    alt: 'Lynk Browser on macOS: pinned tiles and tabs in a sidebar beside a Wikipedia article.',
+    alt: (os: string) => `Lynk Browser on ${os}, with tabs in a sidebar beside a web page.`,
   },
   {
+    id: 'messages',
     name: 'Messages',
     kind: 'iMessage client',
     platforms: 'Linux, Windows',
     href: REPOS.messages,
-    shot: messagesThread,
-    alt: 'Messages showing a group thread named Design crit, with demo data.',
+    alt: (os: string) => `Messages on ${os}, showing a group thread with demo data.`,
   },
   {
+    id: 'music',
     name: 'FormalMusic',
     kind: 'YouTube Music client',
     platforms: 'Linux, Windows',
     href: REPOS.formalmusic,
-    shot: musicLyrics,
-    alt: 'FormalMusic playing a song, with word-synced lyrics beside the album cover.',
+    alt: (os: string) => `FormalMusic on ${os}, playing a song with synced lyrics.`,
   },
 ];
+
+// An app without a shot for the chosen OS shows its first available one, and says so.
+const apps = list.map((app) => {
+  const have = OSES.filter((os) => files[`../assets/shots/${app.id}-${os.id}.png`]);
+  return {
+    ...app,
+    shots: OSES.map((os) => {
+      const shown = have.find((h) => h.id === os.id) ?? have[0];
+      return {
+        os: os.id,
+        src: files[`../assets/shots/${app.id}-${shown.id}.png`].default,
+        alt: app.alt(shown.label),
+        caption: shown.id === os.id ? `${app.name} on ${os.label}` : `${app.name} isn't on ${os.label}. Showing ${shown.label}.`,
+      };
+    }),
+  };
+});
 ---
 
 <section id="apps" aria-labelledby="apps-title" class="pt-28 lg:pt-36">
@@ -53,22 +76,37 @@ const apps = [
       </p>
     </div>
 
-    <div class="ledger mt-8 xl:grid xl:grid-cols-2 xl:items-start xl:gap-x-16" data-active="0">
+    <fieldset class="os reveal mt-8 text-small" style="--d: 100ms">
+      <legend class="sr-only">Platform for the screenshots</legend>
+      <div class="seg">
+        {OSES.map((os) => (
+          <label>
+            <input type="radio" name="apps-os" value={os.id} checked={os.id === 'macos'} class="sr-only" />
+            <span>{os.label}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <div class="ledger mt-8 xl:grid xl:grid-cols-2 xl:items-start xl:gap-x-16">
       <div class="max-w-[35rem] xl:max-w-none">
         <ul class="list flex flex-col gap-10 xl:gap-0 reveal" style="--d: 100ms">
           {apps.map((app, i) => (
             <li>
-              {i < 3 && (
-                <Picture
-                  src={app.shot}
-                  alt={app.alt}
-                  formats={['avif', 'webp']}
-                  widths={[390, 560, 780, 1120]}
-                  sizes="(min-width: 640px) 560px, calc(100vw - 2.5rem)"
-                  loading="lazy"
-                  class="shot mb-3 aspect-[16/10] w-full object-cover object-top xl:hidden"
-                />
-              )}
+              {i < 3 && app.shots.map((s) => (
+                <figure class="mb-3 xl:hidden" data-os={s.os} hidden={s.os !== 'macos'}>
+                  <Picture
+                    src={s.src}
+                    alt={s.alt}
+                    formats={['avif', 'webp']}
+                    widths={[390, 560, 780, 1120]}
+                    sizes="(min-width: 640px) 560px, calc(100vw - 2.5rem)"
+                    loading="lazy"
+                    class="shot aspect-[16/10] w-full object-cover object-top"
+                  />
+                  <figcaption class="mt-2 text-small text-soft">{s.caption}</figcaption>
+                </figure>
+              ))}
               <a
                 href={app.href}
                 data-i={i}
@@ -92,10 +130,10 @@ const apps = [
       </div>
 
       <div class="reveal pointer-events-none hidden xl:grid" style="--d: 100ms" aria-hidden="true">
-        {apps.map((app, i) => (
-          <div class="frame [grid-area:1/1]" data-frame={i}>
+        {apps.map((app, i) => app.shots.map((s) => (
+          <figure class="frame [grid-area:1/1]" data-frame={`${i}-${s.os}`} data-on={i === 0 && s.os === 'macos' ? '' : undefined}>
             <Picture
-              src={app.shot}
+              src={s.src}
               alt=""
               formats={['avif', 'webp']}
               widths={[640, 960, 1280]}
@@ -103,8 +141,9 @@ const apps = [
               loading="lazy"
               class="shot block h-auto w-full"
             />
-          </div>
-        ))}
+            <figcaption class="mt-3 text-small text-soft">{s.caption}</figcaption>
+          </figure>
+        )))}
       </div>
     </div>
   </div>
@@ -120,10 +159,7 @@ const apps = [
     transition: opacity 150ms var(--ease-out);
   }
 
-  .ledger[data-active="0"] .frame[data-frame="0"],
-  .ledger[data-active="1"] .frame[data-frame="1"],
-  .ledger[data-active="2"] .frame[data-frame="2"],
-  .ledger[data-active="3"] .frame[data-frame="3"] {
+  .frame[data-on] {
     opacity: 1;
   }
 
@@ -143,12 +179,31 @@ const apps = [
 </style>
 
 <script>
-  const ledger = document.querySelector<HTMLElement>('#apps .ledger');
-  const list = ledger?.querySelector<HTMLElement>('.list');
+  const root = document.querySelector<HTMLElement>('#apps');
+  const list = root?.querySelector<HTMLElement>('.list');
+  let active = '0';
+  let os = 'macos';
+
+  const render = () => {
+    root?.querySelectorAll<HTMLElement>('.frame').forEach((f) => {
+      f.toggleAttribute('data-on', f.dataset.frame === `${active}-${os}`);
+    });
+    root?.querySelectorAll<HTMLElement>('figure[data-os]').forEach((f) => {
+      f.hidden = f.dataset.os !== os;
+    });
+  };
+
   const show = (e: Event) => {
     const row = (e.target as Element).closest<HTMLElement>('a[data-i]');
-    if (row && ledger) ledger.dataset.active = row.dataset.i;
+    if (!row?.dataset.i || row.dataset.i === active) return;
+    active = row.dataset.i;
+    render();
   };
   list?.addEventListener('pointerover', show);
   list?.addEventListener('focusin', show);
+
+  root?.querySelector('.os')?.addEventListener('change', (e) => {
+    os = (e.target as HTMLInputElement).value;
+    render();
+  });
 </script>
