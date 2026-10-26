@@ -3,26 +3,26 @@ import { highlight } from '../lib/highlight';
 import { REPOS } from '../site';
 
 const commands = [
-  { key: 'fspec update', syntax: 'fspec update [pkg] [--cache]', does: 'Resolves upstream and rewrites the lock. With --cache, it records CI-built OCI digests.' },
-  { key: 'fspec update --images', syntax: 'fspec update --images', does: "Pins each image host's pushed digest." },
+  { key: 'fspec update', syntax: 'fspec update [pkg] [--cache]', does: 'Resolves packages from upstream and updates the lockfile. With --cache, it also records the OCI digests CI built.' },
+  { key: 'fspec update --images', syntax: 'fspec update --images', does: 'Pins the pushed image digest for each image host.' },
   { key: 'fspec image containerfile', syntax: 'fspec image containerfile --host h', does: 'Prints the Containerfile for a bootc host.' },
   { key: 'fspec build', syntax: 'fspec build --pkg p --platform t --out d', does: 'Builds a git(...) package into a .tar.zst.' },
-  { key: 'fspec ci init', syntax: 'fspec ci init [--registry r]', does: 'Writes the image build workflow.' },
+  { key: 'fspec ci init', syntax: 'fspec ci init [--registry r]', does: 'Writes the CI workflow that builds images.' },
   { key: 'fspec ci packages', syntax: 'fspec ci packages', does: 'Writes the workflow that builds and pushes patched packages.' },
-  { key: 'fspec plan', syntax: 'fspec plan [--all] [--dirty]', does: 'Diffs config against state, per host. With --all, it asks each remote host over ssh.' },
-  { key: 'fspec apply', syntax: 'fspec apply [--host h] [--all] [--dirty]', does: 'Converges the host, over ssh for remote hosts.' },
-  { key: 'fspec rollback', syntax: 'fspec rollback [gen]', does: 'Goes back to the previous generation, data included.' },
+  { key: 'fspec plan', syntax: 'fspec plan [--all] [--dirty]', does: 'Shows what would change on each host. With --all, it checks remote hosts over SSH.' },
+  { key: 'fspec apply', syntax: 'fspec apply [--host h] [--all] [--dirty]', does: 'Applies the spec to the host, over SSH for remote hosts.' },
+  { key: 'fspec rollback', syntax: 'fspec rollback [gen]', does: 'Restores the previous generation, including app data.' },
   { key: 'fspec dev', syntax: 'fspec dev [-- cmd]', does: "Opens a shell, or runs one command, in the nearest dev.star's environment." },
-  { key: 'fspec gc', syntax: 'fspec gc --older-than 14d', does: 'Drops old generations, store paths and trash.' },
-  { key: 'fspec adopt', syntax: 'fspec adopt <path>', does: "Pulls an app's edit of a managed file into the repo." },
-  { key: 'fspec orphans', syntax: 'fspec orphans', does: 'Shows unattributed app data.' },
-  { key: 'fspec watch', syntax: 'fspec watch', does: 'Reports drift live.' },
+  { key: 'fspec gc', syntax: 'fspec gc --older-than 14d', does: 'Deletes old generations, store paths, and trash.' },
+  { key: 'fspec adopt', syntax: 'fspec adopt <path>', does: "Copies an app's changes to a managed file back into your repo." },
+  { key: 'fspec orphans', syntax: 'fspec orphans', does: 'Lists app data that no package claims.' },
+  { key: 'fspec watch', syntax: 'fspec watch', does: 'Reports drift as it happens.' },
   { key: 'fspec switch --distro', syntax: 'fspec switch --distro d [--release r]', does: 'Installs another distro beside this one.' },
-  { key: 'fspec switch --adopt-boot', syntax: 'fspec switch --adopt-boot', does: 'Makes the running root own boot, so the old one can be forgotten.' },
+  { key: 'fspec switch --adopt-boot', syntax: 'fspec switch --adopt-boot', does: 'Moves boot to the running root so you can remove the old one.' },
   { key: 'fspec switch --reset-var', syntax: 'fspec switch --reset-var', does: 'Stages a reset of /etc and /var for the next boot of a bootc host.' },
   { key: 'fspec switch --to-image', syntax: 'fspec switch --to-image --yes', does: "Converts a classic machine to the host's bootc image." },
-  { key: 'fspec forget', syntax: 'fspec forget <distro>', does: 'Deletes an old distro root, from the root that owns boot.' },
-  { key: 'fspec disk plan', syntax: 'fspec disk plan [device]', does: 'Lists the steps that bring a disk onto a supported layout.' },
+  { key: 'fspec forget', syntax: 'fspec forget <distro>', does: 'Deletes an old distro root. Run it from the root that owns boot.' },
+  { key: 'fspec disk plan', syntax: 'fspec disk plan [device]', does: 'Lists the steps to move a disk to a supported layout.' },
   { key: 'fspec disk migrate', syntax: 'fspec disk migrate [device]', does: 'Runs the in-place steps of fspec disk plan.' },
   { key: 'fspec disk init', syntax: 'fspec disk init <device>', does: 'Partitions and formats a disk with a supported layout.' },
 ];
@@ -57,9 +57,9 @@ const initSystems = ['systemd', 'runit', 'OpenRC', 'dinit', 's6', 'launchd'];
   <div class="reveal">
     <h2 id="formalspec-title" class="text-[length:var(--text-title)] leading-[1.05] tracking-[-0.02em]">FormalSpec</h2>
     <p class="mt-4 max-w-[40ch] text-lead leading-snug text-soft">
-      Declare your machines in code and keep them identical, on any Linux distro and on macOS.
+      Define your machines in code and keep them identical on any Linux distro or macOS.
     </p>
-    <p class="mt-4 max-w-[60ch] text-small text-soft">Tested on macOS, and on Fedora 44, Arch, Debian 13 and Void.</p>
+    <p class="mt-4 max-w-[60ch] text-small text-soft">Tested on macOS, Fedora 44, Arch Linux, Debian 13, and Void Linux.</p>
   </div>
 
   <div id="fspec-field" data-ui class="reveal mt-12 flex flex-col lg:mt-14">
@@ -106,15 +106,15 @@ const initSystems = ['systemd', 'runit', 'OpenRC', 'dinit', 's6', 'launchd'];
     <div class="reveal lg:row-span-3">
       <h3 class="text-lead tracking-[-0.01em]">Files and hosts</h3>
       <p class="mt-2 max-w-[40ch] text-soft">
-        Write, link or seed a file once, or merge your keys into a file the app also writes. Hosts are plain functions, so
-        a second laptop is one line.
+        Write, link, or seed a file, or merge your settings into a file an app also writes. Hosts are plain functions, so
+        adding a second laptop takes one line.
       </p>
       <pre data-ui class="code mt-6 m-0 min-w-0 overflow-x-auto rounded-[8px] bg-raised p-5"><code set:html={highlight(filesSnippet)} /></pre>
     </div>
 
     <div class="reveal">
       <h3 class="text-lead tracking-[-0.01em]">Services</h3>
-      <p class="mt-2 max-w-[40ch] text-soft">Describe a service once, and FormalSpec writes it for each init system.</p>
+      <p class="mt-2 max-w-[40ch] text-soft">Describe a service once, and FormalSpec generates it for each init system.</p>
       <ul class="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-lead text-ink">
         {initSystems.map((s) => <li>{s}</li>)}
       </ul>
@@ -123,7 +123,7 @@ const initSystems = ['systemd', 'runit', 'OpenRC', 'dinit', 's6', 'launchd'];
     <div class="reveal">
       <h3 class="text-lead tracking-[-0.01em]">System</h3>
       <p class="mt-2 max-w-[40ch] text-soft">
-        Run a bootc image on Fedora Atomic, Bazzite and friends, or the distro's own package manager everywhere else.
+        Use a bootc image on Fedora Atomic, Bazzite, and similar distros, or the distro's own package manager everywhere else.
       </p>
       <pre data-ui class="code mt-4 m-0 min-w-0 overflow-x-auto rounded-[8px] bg-raised p-5"><code set:html={highlight(systemSnippet)} /></pre>
     </div>
@@ -131,7 +131,7 @@ const initSystems = ['systemd', 'runit', 'OpenRC', 'dinit', 's6', 'launchd'];
     <div class="reveal">
       <h3 class="text-lead tracking-[-0.01em]">Cleanup</h3>
       <p class="mt-2 max-w-[40ch] text-soft">
-        Delete a line and the package goes, with its services, files and app data. Changed your mind? Roll back.
+        Delete a line to remove a package along with its services, files, and app data. Changed your mind? Roll back.
       </p>
       <pre data-ui class="code mt-4 m-0 w-fit min-w-0 max-w-full overflow-x-auto rounded-[8px] bg-raised p-5"><code set:html={highlight(cleanupSnippet)} /></pre>
     </div>
@@ -215,7 +215,7 @@ const initSystems = ['systemd', 'runit', 'OpenRC', 'dinit', 's6', 'launchd'];
         does.textContent = c.does;
       } else {
         syntax.hidden = true;
-        does.textContent = 'Not an fspec command. Try plan, apply or rollback.';
+        does.textContent = "That isn't an fspec command. Try plan, apply, or rollback.";
       }
     };
 

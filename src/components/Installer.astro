@@ -16,10 +16,10 @@ const paint = (screen: string) =>
 
 const steps = [
   { id: 'system', title: 'Choose a system', body: `${DISTROS.length} distros, each with its release model and kernel explained.`, screen: system },
-  { id: 'disk', title: 'Choose a disk', body: 'Encrypt it with LUKS2, and get btrfs subvolumes for each system, your home and swap.', screen: disk },
+  { id: 'disk', title: 'Choose a disk', body: 'Encrypt it with LUKS2. Each system, your home folder, and swap get their own Btrfs subvolume.', screen: disk },
   { id: 'install', title: 'Install', body: 'Follow each step, from partitioning the disk to installing the bootloader.', screen: running },
-  { id: 'done', title: 'Restart into it', body: 'Your spec is applied before the first login.', screen: done },
-  { id: 'restore', title: 'Or restore a machine', body: 'Clone your spec repo and pick a host you already described.', screen: host },
+  { id: 'done', title: 'Restart', body: 'Your spec is already applied when you first sign in.', screen: done },
+  { id: 'restore', title: 'Or restore a machine', body: "Clone your spec repo and choose a host you've already defined.", screen: host },
 ];
 ---
 
@@ -30,16 +30,16 @@ const steps = [
         The installer
       </h2>
       <p class="mt-4 max-w-[46ch] text-lead leading-snug text-soft">
-        Pick a distro and a preset, and boot into a machine FormalSpec manages from day one. Or point it at your spec repo
-        and get your machines back.
+        Choose a distro and a preset, then start up a machine that FormalSpec manages from day one. Or point it at your
+        spec repo to restore your machines.
       </p>
       <p class="mt-4 max-w-[60ch] text-small text-soft">
-        {DISTROS.length} distros, from Fedora and openSUSE to Arch, Void and AerynOS.
+        {DISTROS.length} distros, from Fedora and openSUSE to Arch, Void, and AerynOS.
       </p>
       <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
         <a class="btn" href={ISO.url}><Download size={18} aria-hidden="true" />Download the ISO</a>
         <p class="text-small text-soft">
-          x86_64, about 1.2 GB. Boots from USB with Secure Boot on.{' '}
+          For x86_64 PCs, about 1.2 GB. Starts from USB with Secure Boot turned on.{' '}
           <a class="link" href={ISO.checksums}>SHA256SUMS</a>, <a class="link" href={ISO.releases}>all versions</a>
         </p>
       </div>

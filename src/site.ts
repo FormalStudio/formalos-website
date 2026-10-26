@@ -3,7 +3,7 @@ export const SITE = {
   author: 'FormalSnake',
   github: 'https://github.com/FormalStudio',
   description:
-    'Open source pieces that turn Fedora, Arch, Debian and other distros into one system you describe in code: FormalSpec, its installer, native apps and FormalShell.',
+    'Open-source tools that turn Fedora, Arch, Debian, and other distros into one system you describe in code: FormalSpec, its installer, native apps, and FormalShell.',
 };
 
 export const REPOS = {
